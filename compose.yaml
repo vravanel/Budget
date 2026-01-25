@@ -50,7 +50,7 @@ services:
       retries: 5
       start_period: 60s
     volumes:
-      - database_data:/var/lib/mysql:rw
+      - ./docker/mysql/data:/var/lib/mysql:rw
     ports:
       - "3307:3306"
     command: --default-authentication-plugin=mysql_native_password
