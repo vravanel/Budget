@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello BudgetController!
+{% endblock %}
+
+{% block body %}
+
+	{{ form_start(form) }}
+	{{ form_widget(form) }}
+	{{ form_end(form) }}
+
+	<div class="container">
+		<h1>Ma liste de dépenses</h1>
+
+		{{ component('ExpenseForm', {
+        expense: expense,
+    }) }}
+	</div>
+
+{% endblock %}

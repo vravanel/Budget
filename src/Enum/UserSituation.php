@@ -1,8 +1,8 @@
 <?php
 
-namespace src\Enum;
+namespace App\Enum;
 
-enum UserSituation: string 
+enum UserSituation: string
 {
     case SINGLE = 'seul';
     case COUPLE = 'couple';

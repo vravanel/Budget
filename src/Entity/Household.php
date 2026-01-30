@@ -6,8 +6,8 @@ use App\Repository\HouseholdRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use src\Enum\BudgetRepartition;
-use src\Enum\UserSituation;
+use App\Enum\BudgetRepartition;
+use App\Enum\UserSituation;
 
 #[ORM\Entity(repositoryClass: HouseholdRepository::class)]
 class Household

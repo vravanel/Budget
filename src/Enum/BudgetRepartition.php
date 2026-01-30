@@ -1,6 +1,6 @@
 <?php
 
-namespace src\Enum;
+namespace App\Enum;
 
 enum BudgetRepartition: string
 {
