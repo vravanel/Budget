@@ -46,18 +46,11 @@ RUN echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/docker-php-memlimit.
 # Définir le répertoire de travail
 WORKDIR /var/www/symfony
 
-# Copier les fichiers de configuration pour l'installation des dépendances
-COPY composer.json composer.lock ./
-COPY package*.json ./
-
-# Installation des dépendances PHP
-RUN composer install --no-scripts --no-autoloader --no-interaction
-
 # Copier tout le projet
 COPY . .
 
-# Finaliser l'installation de Composer
-RUN composer dump-autoload --optimize --no-interaction
+# Installation des dépendances PHP
+RUN composer install --optimize-autoloader --no-interaction
 
 # Installation des dépendances Node.js (si package.json existe)
 RUN if [ -f package.json ]; then npm install; fi
@@ -67,6 +60,19 @@ RUN php bin/console tailwind:build
 
 # Permissions
 RUN chown -R www-data:www-data /var/www/symfony
+
+# Script d'entrypoint pour initialiser les volumes nommés
+RUN printf '#!/bin/sh\n\
+if [ ! -f /var/www/symfony/vendor/autoload.php ]; then\n\
+    composer install --optimize-autoloader --no-interaction\n\
+fi\n\
+if [ ! -d /var/www/symfony/var/cache ]; then\n\
+    php bin/console cache:warmup\n\
+fi\n\
+chown -R www-data:www-data /var/www/symfony/vendor /var/www/symfony/var\n\
+exec "$@"\n' > /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
 
 # Exposer le port
 EXPOSE 9000
