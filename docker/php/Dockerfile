@@ -48,7 +48,7 @@ WORKDIR /var/www/symfony
 
 # Copier les fichiers de configuration pour l'installation des dépendances
 COPY composer.json composer.lock ./
-COPY package.json package-lock.json* ./
+COPY package*.json ./
 
 # Installation des dépendances PHP
 RUN composer install --no-scripts --no-autoloader --no-interaction

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -10,6 +11,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use src\Enum\BudgetRepartition;
 use src\Enum\UserSituation;
 
+#[ApiResource]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
@@ -38,14 +40,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private bool $isVerified = false;
 
-    #[ORM\Column(enumType: UserSituation::class)]
-    private ?UserSituation $situationPersonal = null;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column(enumType: BudgetRepartition::class)]
-    private ?BudgetRepartition $budgetRepartition = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
@@ -143,18 +139,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getSituationPersonal(): ?UserSituation
-    {
-        return $this->situationPersonal;
-    }
-
-    public function setSituationPersonal(UserSituation $situationPersonal): static
-    {
-        $this->situationPersonal = $situationPersonal;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -163,18 +147,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getBudgetRepartition(): ?BudgetRepartition
-    {
-        return $this->budgetRepartition;
-    }
-
-    public function setBudgetRepartition(BudgetRepartition $budgetRepartition): static
-    {
-        $this->budgetRepartition = $budgetRepartition;
 
         return $this;
     }
