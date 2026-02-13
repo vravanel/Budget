@@ -8,11 +8,11 @@ services:
     volumes:
       - ./:/var/www/symfony:rw
       - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
-    environment:
-      DATABASE_URL: ${DATABASE_URL}
-      APP_ENV: ${APP_ENV:-dev}
-      APP_SECRET: ${APP_SECRET}
-      MAILER_DSN: ${MAILER_DSN}
+      - php_vendor:/var/www/symfony/vendor
+      - php_var:/var/www/symfony/var
+    env_file:
+      - .env
+      - .env.local
     depends_on:
       database:
         condition: service_healthy
@@ -39,13 +39,11 @@ services:
   database:
     image: mysql:8.0
     container_name: symfony_db
-    environment:
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    env_file:
+      - .env
+      - .env.local
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 5s
       retries: 5
       start_period: 60s
@@ -76,11 +74,13 @@ services:
   phpmyadmin:
     image: phpmyadmin:latest
     container_name: symfony_phpmyadmin
+    env_file:
+      - .env
+      - .env.local
     environment:
       PMA_HOST: database
       PMA_PORT: 3306
       PMA_ARBITRARY: 1
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - "8081:80"
     depends_on:
@@ -92,6 +92,8 @@ services:
 
 volumes:
   database_data:
+  php_vendor:
+  php_var:
 
 networks:
   symfony_network:

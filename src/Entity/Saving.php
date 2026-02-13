@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\SavingRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SavingRepository::class)]
+#[ApiResource]
 class Saving
 {
     #[ORM\Id]
@@ -14,40 +16,29 @@ class Saving
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $label = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $amount = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $date = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $goalAmount = null;
+
+    #[ORM\ManyToOne(inversedBy: 'savings')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     #[ORM\ManyToOne(inversedBy: 'savings')]
     #[ORM\JoinColumn(nullable: false)]
     private ?HouseHold $houseHold = null;
 
-    #[ORM\Column(length: 100)]
-    private ?string $label = null;
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
-    private ?string $targetAmount = null;
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $currentAmount = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $createdAt = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTime $updatedAt = null;
-
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getHouseHold(): ?HouseHold
-    {
-        return $this->houseHold;
-    }
-
-    public function setHouseHold(?HouseHold $houseHold): static
-    {
-        $this->houseHold = $houseHold;
-
-        return $this;
     }
 
     public function getLabel(): ?string
@@ -62,50 +53,62 @@ class Saving
         return $this;
     }
 
-    public function getTargetAmount(): ?string
+    public function getAmount(): ?string
     {
-        return $this->targetAmount;
+        return $this->amount;
     }
 
-    public function setTargetAmount(?string $targetAmount): static
+    public function setAmount(string $amount): static
     {
-        $this->targetAmount = $targetAmount;
+        $this->amount = $amount;
 
         return $this;
     }
 
-    public function getCurrentAmount(): ?string
+    public function getDate(): ?\DateTime
     {
-        return $this->currentAmount;
+        return $this->date;
     }
 
-    public function setCurrentAmount(string $currentAmount): static
+    public function setDate(\DateTime $date): static
     {
-        $this->currentAmount = $currentAmount;
+        $this->date = $date;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getGoalAmount(): ?string
     {
-        return $this->createdAt;
+        return $this->goalAmount;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): static
+    public function setGoalAmount(?string $goalAmount): static
     {
-        $this->createdAt = $createdAt;
+        $this->goalAmount = $goalAmount;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getUser(): ?User
     {
-        return $this->updatedAt;
+        return $this->user;
     }
 
-    public function setUpdatedAt(?\DateTime $updatedAt): static
+    public function setUser(?User $user): static
     {
-        $this->updatedAt = $updatedAt;
+        $this->user = $user;
+
+        return $this;
+    }
+
+    public function getHouseHold(): ?HouseHold
+    {
+        return $this->houseHold;
+    }
+
+    public function setHouseHold(?HouseHold $houseHold): static
+    {
+        $this->houseHold = $houseHold;
 
         return $this;
     }

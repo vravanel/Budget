@@ -3,23 +3,29 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[ORM\Table(name: '`user`')]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id = null;
+    #[ORM\Column(type: 'bigint')]
+    private ?string $id = null;
 
+    #[Assert\Email(
+        message: 'The email {{ value }} is not a valid email.',
+    )]
+    #[Assert\NotBlank]
     #[ORM\Column(length: 180)]
     private ?string $email = null;
 
@@ -35,20 +41,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[ORM\Column]
-    private bool $isVerified = false;
+    #[ORM\Column(length: 100)]
+    private ?string $firstName = null;
 
-     #[ORM\Column]
+    #[ORM\Column(length: 100)]
+    private ?string $lastName = null;
+
+    #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $updatedAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'members')]
+    private ?HouseHold $houseHold = null;
+
     /**
-     * @var Collection<int, HouseHoldUser>
+     * @var Collection<int, Income>
      */
-    #[ORM\OneToMany(targetEntity: HouseHoldUser::class, mappedBy: 'user')]
-    private Collection $houseHoldUsers;
+    #[ORM\OneToMany(targetEntity: Income::class, mappedBy: 'user')]
+    private Collection $incomes;
 
     /**
      * @var Collection<int, Expense>
@@ -57,19 +69,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $expenses;
 
     /**
-     * @var Collection<int, Income>
+     * @var Collection<int, Saving>
      */
-    #[ORM\OneToMany(targetEntity: Income::class, mappedBy: 'user')]
-    private Collection $incomes;
+    #[ORM\OneToMany(targetEntity: Saving::class, mappedBy: 'user')]
+    private Collection $savings;
 
     public function __construct()
     {
-        $this->houseHoldUsers = new ArrayCollection();
-        $this->expenses = new ArrayCollection();
         $this->incomes = new ArrayCollection();
+        $this->expenses = new ArrayCollection();
+        $this->savings = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    #[ORM\PrePersist]
+    public function onPrePersist(): void
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function onPreUpdate(): void
+    {
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -139,7 +164,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __serialize(): array
     {
         $data = (array) $this;
-        $data["\0".self::class."\0password"] = hash('crc32c', $this->password);
+        $data["\0" . self::class . "\0password"] = hash('crc32c', $this->password);
 
         return $data;
     }
@@ -150,14 +175,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         // @deprecated, to be removed when upgrading to Symfony 8
     }
 
-    public function isVerified(): bool
+    public function getFirstName(): ?string
     {
-        return $this->isVerified;
+        return $this->firstName;
     }
 
-    public function setIsVerified(bool $isVerified): static
+    public function setFirstName(string $firstName): static
     {
-        $this->isVerified = $isVerified;
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): static
+    {
+        $this->lastName = $lastName;
 
         return $this;
     }
@@ -186,30 +223,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, HouseHoldUser>
-     */
-    public function getHouseHoldUsers(): Collection
+    public function getHouseHold(): ?HouseHold
     {
-        return $this->houseHoldUsers;
+        return $this->houseHold;
     }
 
-    public function addHouseHoldUser(HouseHoldUser $houseHoldUser): static
+    public function setHouseHold(?HouseHold $houseHold): static
     {
-        if (!$this->houseHoldUsers->contains($houseHoldUser)) {
-            $this->houseHoldUsers->add($houseHoldUser);
-            $houseHoldUser->setUser($this);
+        $this->houseHold = $houseHold;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Income>
+     */
+    public function getIncomes(): Collection
+    {
+        return $this->incomes;
+    }
+
+    public function addIncome(Income $income): static
+    {
+        if (!$this->incomes->contains($income)) {
+            $this->incomes->add($income);
+            $income->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeHouseHoldUser(HouseHoldUser $houseHoldUser): static
+    public function removeIncome(Income $income): static
     {
-        if ($this->houseHoldUsers->removeElement($houseHoldUser)) {
+        if ($this->incomes->removeElement($income)) {
             // set the owning side to null (unless already changed)
-            if ($houseHoldUser->getUser() === $this) {
-                $houseHoldUser->setUser(null);
+            if ($income->getUser() === $this) {
+                $income->setUser(null);
             }
         }
 
@@ -247,29 +296,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * @return Collection<int, Income>
+     * @return Collection<int, Saving>
      */
-    public function getIncomes(): Collection
+    public function getSavings(): Collection
     {
-        return $this->incomes;
+        return $this->savings;
     }
 
-    public function addIncome(Income $income): static
+    public function addSaving(Saving $saving): static
     {
-        if (!$this->incomes->contains($income)) {
-            $this->incomes->add($income);
-            $income->setUser($this);
+        if (!$this->savings->contains($saving)) {
+            $this->savings->add($saving);
+            $saving->setUser($this);
         }
 
         return $this;
     }
 
-    public function removeIncome(Income $income): static
+    public function removeSaving(Saving $saving): static
     {
-        if ($this->incomes->removeElement($income)) {
+        if ($this->savings->removeElement($saving)) {
             // set the owning side to null (unless already changed)
-            if ($income->getUser() === $this) {
-                $income->setUser(null);
+            if ($saving->getUser() === $this) {
+                $saving->setUser(null);
             }
         }
 

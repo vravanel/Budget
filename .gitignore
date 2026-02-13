@@ -3,11 +3,16 @@
 /.env.local
 /.env.local.php
 /.env.*.local
+/.env.dev
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+###> docker ###
+/docker/mysql/
+###< docker ###
 
 ###> phpunit/phpunit ###
 /phpunit.xml
@@ -18,5 +23,7 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
-docker/mysql/data/
-docker/mysql/data/*
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###

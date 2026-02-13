@@ -2,13 +2,14 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
+#[ApiResource]
 class Category
 {
     #[ORM\Id]
@@ -19,24 +20,14 @@ class Category
     #[ORM\Column(length: 100)]
     private ?string $name = null;
 
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $icon = null;
+
+    #[ORM\Column(length: 7)]
+    private ?string $color = '#3B82F6';
+
     #[ORM\Column]
-    private ?bool $isDefault = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $createdAt = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTime $updatedAt = null;
-
-    #[ORM\ManyToOne(inversedBy: 'categories')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?HouseHold $houseHold = null;
-
-    /**
-     * @var Collection<int, SubCategory>
-     */
-    #[ORM\OneToMany(targetEntity: SubCategory::class, mappedBy: 'category')]
-    private Collection $subCategories;
+    private ?int $sortOrder = 0;
 
     /**
      * @var Collection<int, Expense>
@@ -46,7 +37,6 @@ class Category
 
     public function __construct()
     {
-        $this->subCategories = new ArrayCollection();
         $this->expenses = new ArrayCollection();
     }
 
@@ -67,80 +57,38 @@ class Category
         return $this;
     }
 
-    public function isDefault(): ?bool
+    public function getIcon(): ?string
     {
-        return $this->isDefault;
+        return $this->icon;
     }
 
-    public function setIsDefault(bool $isDefault): static
+    public function setIcon(?string $icon): static
     {
-        $this->isDefault = $isDefault;
+        $this->icon = $icon;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getColor(): ?string
     {
-        return $this->createdAt;
+        return $this->color;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): static
+    public function setColor(string $color): static
     {
-        $this->createdAt = $createdAt;
+        $this->color = $color;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getSortOrder(): ?int
     {
-        return $this->updatedAt;
+        return $this->sortOrder;
     }
 
-    public function setUpdatedAt(?\DateTime $updatedAt): static
+    public function setSortOrder(int $sortOrder): static
     {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getHouseHold(): ?HouseHold
-    {
-        return $this->houseHold;
-    }
-
-    public function setHouseHold(?HouseHold $houseHold): static
-    {
-        $this->houseHold = $houseHold;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, SubCategory>
-     */
-    public function getSubCategories(): Collection
-    {
-        return $this->subCategories;
-    }
-
-    public function addSubCategory(SubCategory $subCategory): static
-    {
-        if (!$this->subCategories->contains($subCategory)) {
-            $this->subCategories->add($subCategory);
-            $subCategory->setCategory($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSubCategory(SubCategory $subCategory): static
-    {
-        if ($this->subCategories->removeElement($subCategory)) {
-            // set the owning side to null (unless already changed)
-            if ($subCategory->getCategory() === $this) {
-                $subCategory->setCategory(null);
-            }
-        }
+        $this->sortOrder = $sortOrder;
 
         return $this;
     }

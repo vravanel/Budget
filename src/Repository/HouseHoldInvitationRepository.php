@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\HouseHold;
+use App\Entity\HouseHoldInvitation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<HouseHold>
+ * @extends ServiceEntityRepository<HouseHoldInvitation>
  */
-class HouseHoldRepository extends ServiceEntityRepository
+class HouseHoldInvitationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, HouseHold::class);
+        parent::__construct($registry, HouseHoldInvitation::class);
     }
 
     //    /**
-    //     * @return HouseHold[] Returns an array of HouseHold objects
+    //     * @return HouseHoldInvitation[] Returns an array of HouseHoldInvitation objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class HouseHoldRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?HouseHold
+    //    public function findOneBySomeField($value): ?HouseHoldInvitation
     //    {
     //        return $this->createQueryBuilder('h')
     //            ->andWhere('h.exampleField = :val')

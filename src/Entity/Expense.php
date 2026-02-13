@@ -2,11 +2,13 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ExpenseRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ExpenseRepository::class)]
+#[ApiResource]
 class Expense
 {
     #[ORM\Id]
@@ -14,9 +16,14 @@ class Expense
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'expenses')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?HouseHold $houseHold = null;
+    #[ORM\Column(length: 255)]
+    private ?string $label = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $amount = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $date = null;
 
     #[ORM\ManyToOne(inversedBy: 'expenses')]
     #[ORM\JoinColumn(nullable: false)]
@@ -24,80 +31,15 @@ class Expense
 
     #[ORM\ManyToOne(inversedBy: 'expenses')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Category $category = null;
+    private ?HouseHold $houseHold = null;
 
     #[ORM\ManyToOne(inversedBy: 'expenses')]
-    private ?SubCategory $subCategory = null;
-
-    #[ORM\Column(length: 150)]
-    private ?string $label = null;
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $amount = null;
-
-    #[ORM\Column(length: 20)]
-    private ?string $type = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $date = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $createdAt = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTime $updatedAt = null;
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getHouseHold(): ?HouseHold
-    {
-        return $this->houseHold;
-    }
-
-    public function setHouseHold(?HouseHold $houseHold): static
-    {
-        $this->houseHold = $houseHold;
-
-        return $this;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    public function getCategory(): ?Category
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?Category $category): static
-    {
-        $this->category = $category;
-
-        return $this;
-    }
-
-    public function getSubCategory(): ?SubCategory
-    {
-        return $this->subCategory;
-    }
-
-    public function setSubCategory(?SubCategory $subCategory): static
-    {
-        $this->subCategory = $subCategory;
-
-        return $this;
     }
 
     public function getLabel(): ?string
@@ -124,18 +66,6 @@ class Expense
         return $this;
     }
 
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): static
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
     public function getDate(): ?\DateTime
     {
         return $this->date;
@@ -148,26 +78,38 @@ class Expense
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getUser(): ?User
     {
-        return $this->createdAt;
+        return $this->user;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): static
+    public function setUser(?User $user): static
     {
-        $this->createdAt = $createdAt;
+        $this->user = $user;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getHouseHold(): ?HouseHold
     {
-        return $this->updatedAt;
+        return $this->houseHold;
     }
 
-    public function setUpdatedAt(?\DateTime $updatedAt): static
+    public function setHouseHold(?HouseHold $houseHold): static
     {
-        $this->updatedAt = $updatedAt;
+        $this->houseHold = $houseHold;
+
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
 
         return $this;
     }

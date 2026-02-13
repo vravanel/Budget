@@ -1,5 +1,6 @@
 .git
 .env.local
+.env.dev
 .env.*.local
 vendor/
 var/
@@ -7,3 +8,6 @@ node_modules/
 .idea/
 .vscode/
 *.log
+docker/mysql/
+.claude/
+.phpunit.cache/

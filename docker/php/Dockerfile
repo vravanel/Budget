@@ -39,18 +39,30 @@ RUN echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/docker-php-memlimit.
 
 WORKDIR /var/www/symfony
 
-COPY composer.json composer.lock ./
-
-RUN composer install --no-scripts --no-autoloader --no-interaction
-
+# Copier tout le projet
 COPY . .
 
-RUN composer dump-autoload --optimize --no-interaction
+# Installation des dépendances PHP
+RUN composer install --optimize-autoloader --no-interaction
 
 RUN php bin/console tailwind:build
 
 RUN chown -R www-data:www-data /var/www/symfony
 
+# Script d'entrypoint pour initialiser les volumes nommés
+RUN printf '#!/bin/sh\n\
+if [ ! -f /var/www/symfony/vendor/autoload.php ]; then\n\
+    composer install --optimize-autoloader --no-interaction\n\
+fi\n\
+if [ ! -d /var/www/symfony/var/cache ]; then\n\
+    php bin/console cache:warmup\n\
+fi\n\
+chown -R www-data:www-data /var/www/symfony/vendor /var/www/symfony/var\n\
+exec "$@"\n' > /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
+
+ENTRYPOINT ["entrypoint.sh"]
+
+# Exposer le port
 EXPOSE 9000
 
 CMD ["php-fpm"]

@@ -2,17 +2,28 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\IncomeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: IncomeRepository::class)]
+#[ApiResource]
 class Income
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $label = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private ?string $amount = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTime $date = null;
 
     #[ORM\ManyToOne(inversedBy: 'incomes')]
     #[ORM\JoinColumn(nullable: false)]
@@ -22,48 +33,9 @@ class Income
     #[ORM\JoinColumn(nullable: false)]
     private ?HouseHold $houseHold = null;
 
-    #[ORM\Column(length: 150)]
-    private ?string $label = null;
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    private ?string $amount = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $date = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTime $createdAt = null;
-
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTime $updatedAt = null;
-
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUser(): ?User
-    {
-        return $this->user;
-    }
-
-    public function setUser(?User $user): static
-    {
-        $this->user = $user;
-
-        return $this;
-    }
-
-    public function getHouseHold(): ?HouseHold
-    {
-        return $this->houseHold;
-    }
-
-    public function setHouseHold(?HouseHold $houseHold): static
-    {
-        $this->houseHold = $houseHold;
-
-        return $this;
     }
 
     public function getLabel(): ?string
@@ -102,26 +74,26 @@ class Income
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getUser(): ?User
     {
-        return $this->createdAt;
+        return $this->user;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): static
+    public function setUser(?User $user): static
     {
-        $this->createdAt = $createdAt;
+        $this->user = $user;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getHouseHold(): ?HouseHold
     {
-        return $this->updatedAt;
+        return $this->houseHold;
     }
 
-    public function setUpdatedAt(?\DateTime $updatedAt): static
+    public function setHouseHold(?HouseHold $houseHold): static
     {
-        $this->updatedAt = $updatedAt;
+        $this->houseHold = $houseHold;
 
         return $this;
     }
