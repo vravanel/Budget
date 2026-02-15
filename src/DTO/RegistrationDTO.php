@@ -18,10 +18,10 @@ class RegistrationDTO
     public string $password;
 
     #[Assert\NotBlank(message: "Le prénom ne peut pas être vide")]
-    #[Assert\Length(min: 2, max: 100)]
+    #[Assert\Length(min: 2, max: 100, minMessage: "Le prénom doit contenir au moins 2 caractères", maxMessage: "Le prénom ne peut pas contenir plus de 100 caractères")]
     public string $firstName;
 
     #[Assert\NotBlank(message: "Le nom ne peut pas être vide")]
-    #[Assert\Length(min: 2, max: 100)]
+    #[Assert\Length(min: 2, max: 100, minMessage: "Le nom doit contenir au moins 2 caractères", maxMessage: "Le nom ne peut pas contenir plus de 100 caractères")]
     public string $lastName;
 }
