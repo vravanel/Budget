@@ -1,0 +1,50 @@
+<div {{ attributes }}>
+	<form data-action="live#action:prevent" data-live-action-param="save">
+		<div class="grid gap-6">
+			<div class="grid gap-3">
+				<twig:Label for="expense-name">Nom de la dépense</twig:Label>
+				<twig:Input type="text" id="expense-name" name="name" data-model="name" value="{{ name }}"/>
+			</div>
+
+			<div class="grid gap-3">
+				<twig:Label for="expense-date">Date</twig:Label>
+				<twig:Input type="date" id="expense-date" name="createdAt" data-model="createdAt" value="{{ createdAt }}"/>
+			</div>
+
+			<div class="grid gap-3">
+				<div class="flex items-center justify-between">
+					<twig:Label for="expense-category">Catégorie</twig:Label>
+					<twig:Dialog id="new-category-modal">
+						<twig:Dialog:Trigger>
+							<twig:Button variant="link" size="sm" type="button" class="h-auto p-0" {{ ...trigger_attrs }}>
+								+ Ajouter une catégorie
+							</twig:Button>
+						</twig:Dialog:Trigger>
+						<twig:Dialog:Content class="sm:max-w-[425px]">
+							<twig:Dialog:Header>
+								<twig:Dialog:Title>Nouvelle catégorie</twig:Dialog:Title>
+								<twig:Dialog:Description>
+									Ajoutez une nouvelle catégorie de dépense. Elle sera immédiatement disponible dans le formulaire.
+								</twig:Dialog:Description>
+							</twig:Dialog:Header>
+							<twig:NewCategoryForm/>
+						</twig:Dialog:Content>
+					</twig:Dialog>
+				</div>
+
+				<select data-model="category" id="expense-category" class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+					<option value="">Choisir une catégorie</option>
+					{% for category_option in categories %}
+						<option value="{{ category_option.id }}" {{ this.isCurrentCategory(category_option) ? 'selected' : '' }}>
+							{{ category_option.name }}
+						</option>
+					{% endfor %}
+				</select>
+			</div>
+
+			<div class="flex justify-end">
+				<twig:Button type="submit">Enregistrer la dépense</twig:Button>
+			</div>
+		</div>
+	</form>
+</div>
